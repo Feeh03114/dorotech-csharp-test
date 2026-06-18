@@ -37,7 +37,7 @@ public sealed class BooksController : ControllerBase
     /// <summary>
     /// Gets a book by id.
     /// </summary>
-    [HttpGet("{id:guid}")]
+    [HttpGet("{id:guid}", Name = "GetBookById")]
     [AllowAnonymous]
     [ProducesResponseType(typeof(BookDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -64,7 +64,7 @@ public sealed class BooksController : ControllerBase
         var result = await _bookService.CreateAsync(request, cancellationToken);
         _logger.LogInformation("Book {BookId} created.", result.Id);
 
-        return CreatedAtAction(nameof(GetByIdAsync), new { id = result.Id }, result);
+        return CreatedAtRoute("GetBookById", new { id = result.Id }, result);
     }
 
     /// <summary>
