@@ -1,3 +1,114 @@
+## Implementacao entregue
+
+API de livraria desenvolvida em .NET 6 com ASP.NET Core, Entity Framework Core e PostgreSQL. A aplicacao expoe Swagger UI com autenticacao JWT Bearer para testar os endpoints protegidos.
+
+### Stack
+
+- .NET 6
+- ASP.NET Core Web API
+- Entity Framework Core 6
+- PostgreSQL
+- Swagger / Swashbuckle
+- JWT Bearer
+- Serilog
+- xUnit
+
+### Como executar
+
+1. Suba um PostgreSQL local:
+
+```bash
+docker run --name bookstore-postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=bookstore -p 5432:5432 -d postgres:16
+```
+
+2. Restaure as ferramentas e pacotes:
+
+```bash
+dotnet tool restore
+dotnet restore Bookstore.sln
+```
+
+3. Aplique a migration:
+
+```bash
+dotnet tool run dotnet-ef -- database update --project src/Bookstore.Infrastructure --startup-project src/Bookstore.Api
+```
+
+4. Rode a API:
+
+```bash
+dotnet run --project src/Bookstore.Api
+```
+
+5. Acesse o Swagger:
+
+```text
+https://localhost:7087/swagger
+```
+
+Se a porta HTTPS variar, confira `src/Bookstore.Api/Properties/launchSettings.json`.
+
+### Autenticacao
+
+Endpoint:
+
+```http
+POST /api/auth/login
+```
+
+Payload:
+
+```json
+{
+  "username": "admin",
+  "password": "Admin@123"
+}
+```
+
+Copie o `accessToken` retornado e use o botao **Authorize** do Swagger com:
+
+```text
+Bearer <accessToken>
+```
+
+### Endpoints
+
+Publicos:
+
+- `GET /api/books`
+- `GET /api/books/{id}`
+
+Protegidos por JWT de administrador:
+
+- `POST /api/books`
+- `PUT /api/books/{id}`
+- `DELETE /api/books/{id}`
+
+Filtros de consulta em `GET /api/books`:
+
+- `pageNumber`
+- `pageSize`
+- `name`
+- `author`
+- `isbn`
+- `publisher`
+- `publicationYear`
+
+### Testes
+
+```bash
+dotnet test Bookstore.sln
+```
+
+### Observacoes
+
+- A connection string padrao esta em `src/Bookstore.Api/appsettings.json`.
+- A aplicacao executa migrations e seed de dados na inicializacao.
+- Logs sao escritos no console e em `logs/bookstore-api-.log`.
+- .NET 6 foi usado conforme solicitado, embora esteja fora de suporte upstream desde 12 de novembro de 2025.
+
+---
+
 ## Desafio para Back-end Developer na DoroTech - C# .NET
 
 #### Requisitos Gerais:
