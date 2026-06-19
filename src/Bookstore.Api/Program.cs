@@ -1,4 +1,3 @@
-using System.Reflection;
 using System.Text;
 using Bookstore.Api.Auth;
 using Bookstore.Api.Middleware;
@@ -58,10 +57,10 @@ builder.Services.AddSwaggerGen(options =>
         Description = "DoroTech C# backend challenge API for bookstore inventory management."
     });
 
-    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-    if (File.Exists(xmlPath))
+    foreach (var xmlPath in Directory.EnumerateFiles(AppContext.BaseDirectory, "Bookstore.*.xml"))
+    {
         options.IncludeXmlComments(xmlPath);
+    }
 
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {

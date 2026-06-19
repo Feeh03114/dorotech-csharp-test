@@ -1,6 +1,23 @@
-## Implementacao entregue
+## Implementação entregue
 
-API de livraria desenvolvida em .NET 6 com ASP.NET Core, Entity Framework Core e PostgreSQL. A aplicacao expoe Swagger UI com autenticacao JWT Bearer para testar os endpoints protegidos.
+Esta solução entrega uma API para gerenciar o estoque de livros de uma livraria. A consulta de livros é pública, enquanto criação, edição e exclusão exigem autenticação de administrador via JWT Bearer.
+
+O projeto foi desenvolvido em .NET 6 com ASP.NET Core, Entity Framework Core e PostgreSQL. Toda a avaliação pode ser feita pelo Swagger UI, incluindo login, autorização com Bearer token, filtros, paginação e operações de CRUD.
+
+### O que foi atendido
+
+- Listagem pública de livros ordenada por nome.
+- Consulta por id, filtros e paginação.
+- Cadastro, edição e exclusão protegidos por token de administrador.
+- Validação de duplicidade por nome + autor e por ISBN.
+- Persistência com Entity Framework Core e PostgreSQL.
+- Migration inicial disponível no repositório.
+- Massa de dados inicial para facilitar a avaliação.
+- Tratamento de erros com respostas HTTP adequadas.
+- Logs de requisição, operações de escrita e erros com Serilog.
+- Swagger documentado com autenticação JWT Bearer.
+- Testes automatizados para regras de serviço e persistência.
+- Currículo adicionado na raiz do repositório.
 
 ### Stack
 
@@ -13,7 +30,7 @@ API de livraria desenvolvida em .NET 6 com ASP.NET Core, Entity Framework Core e
 - Serilog
 - xUnit
 
-### Como executar
+### Como executar localmente
 
 1. Suba um PostgreSQL local:
 
@@ -28,7 +45,7 @@ dotnet tool restore
 dotnet restore Bookstore.sln
 ```
 
-3. Aplique a migration:
+3. Aplique a migration, caso queira criar o banco antes de iniciar a API:
 
 ```bash
 dotnet tool run dotnet-ef -- database update --project src/Bookstore.Infrastructure --startup-project src/Bookstore.Api
@@ -46,9 +63,18 @@ dotnet run --project src/Bookstore.Api
 https://localhost:7087/swagger
 ```
 
-Se a porta HTTPS variar, confira `src/Bookstore.Api/Properties/launchSettings.json`.
+Se a porta HTTPS variar, confira `src/Bookstore.Api/Properties/launchSettings.json`. Ao iniciar a aplicação, ela também executa as migrations pendentes e insere a massa inicial automaticamente.
 
-### Autenticacao
+### Como testar pelo Swagger
+
+1. Abra o Swagger.
+2. Execute `POST /api/Auth/login` com o usuário administrador abaixo.
+3. Copie o campo `accessToken` retornado.
+4. Clique em **Authorize**.
+5. Informe `Bearer <accessToken>`.
+6. Teste os endpoints protegidos de criação, edição e exclusão.
+
+### Autenticação de administrador
 
 Endpoint:
 
@@ -65,15 +91,15 @@ Payload:
 }
 ```
 
-Copie o `accessToken` retornado e use o botao **Authorize** do Swagger com:
+Copie o `accessToken` retornado e use o botão **Authorize** do Swagger com:
 
 ```text
 Bearer <accessToken>
 ```
 
-### Endpoints
+### Endpoints principais
 
-Publicos:
+Públicos:
 
 - `GET /api/books`
 - `GET /api/books/{id}`
@@ -100,11 +126,26 @@ Filtros de consulta em `GET /api/books`:
 dotnet test Bookstore.sln
 ```
 
-### Observacoes
+### Smoke test realizado
 
-- A connection string padrao esta em `src/Bookstore.Api/appsettings.json`.
-- A aplicacao executa migrations e seed de dados na inicializacao.
-- Logs sao escritos no console e em `logs/bookstore-api-.log`.
+Além dos testes automatizados, o fluxo completo foi validado manualmente via HTTP/Swagger:
+
+- login de administrador;
+- listagem pública;
+- tentativa de cadastro sem token, retornando `401`;
+- cadastro autenticado, retornando `201`;
+- consulta por id;
+- consulta por filtro;
+- validação de duplicidade, retornando `409`;
+- edição autenticada, retornando `200`;
+- exclusão autenticada, retornando `204`;
+- consulta após exclusão, retornando `404`.
+
+### Observações
+
+- A connection string padrão está em `src/Bookstore.Api/appsettings.json`.
+- A aplicação executa migrations e seed de dados na inicialização.
+- Logs são escritos no console e em `logs/bookstore-api-.log`.
 - .NET 6 foi usado conforme solicitado, embora esteja fora de suporte upstream desde 12 de novembro de 2025.
 
 ---

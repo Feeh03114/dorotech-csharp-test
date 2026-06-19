@@ -27,8 +27,11 @@ public sealed class AuthController : ControllerBase
     }
 
     /// <summary>
-    /// Authenticates the administrator user and returns a JWT Bearer token.
+    /// Autentica o administrador e retorna um token JWT para usar no Swagger.
     /// </summary>
+    /// <remarks>
+    /// Use o token retornado no botão Authorize do Swagger no formato: Bearer &lt;accessToken&gt;.
+    /// </remarks>
     [HttpPost("login")]
     [ProducesResponseType(typeof(LoginResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -74,6 +77,16 @@ public sealed class AuthController : ControllerBase
     }
 }
 
+/// <summary>
+/// Credenciais do administrador usadas para gerar o token JWT.
+/// </summary>
+/// <param name="Username">Usuário administrador configurado na aplicação.</param>
+/// <param name="Password">Senha do administrador configurada na aplicação.</param>
 public sealed record LoginRequest(string Username, string Password);
 
+/// <summary>
+/// Resultado do login com o token de acesso e sua data de expiração.
+/// </summary>
+/// <param name="AccessToken">Token JWT usado no header Authorization como Bearer token.</param>
+/// <param name="ExpiresAt">Data e hora em UTC em que o token expira.</param>
 public sealed record LoginResponse(string AccessToken, DateTime ExpiresAt);

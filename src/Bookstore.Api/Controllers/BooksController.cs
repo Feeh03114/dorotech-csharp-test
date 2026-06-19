@@ -20,8 +20,11 @@ public sealed class BooksController : ControllerBase
     }
 
     /// <summary>
-    /// Lists books ordered by name with optional filters and pagination.
+    /// Consulta os livros disponíveis para o público.
     /// </summary>
+    /// <remarks>
+    /// A listagem sempre retorna os livros em ordem ascendente pelo nome. Use os filtros para localizar livros por nome, autor, ISBN, editora ou ano de publicação.
+    /// </remarks>
     [HttpGet]
     [AllowAnonymous]
     [ProducesResponseType(typeof(PagedResult<BookDto>), StatusCodes.Status200OK)]
@@ -35,7 +38,7 @@ public sealed class BooksController : ControllerBase
     }
 
     /// <summary>
-    /// Gets a book by id.
+    /// Consulta um livro específico pelo identificador.
     /// </summary>
     [HttpGet("{id:guid}", Name = "GetBookById")]
     [AllowAnonymous]
@@ -48,8 +51,11 @@ public sealed class BooksController : ControllerBase
     }
 
     /// <summary>
-    /// Creates a book. Requires administrator authentication.
+    /// Cadastra um novo livro no estoque.
     /// </summary>
+    /// <remarks>
+    /// Requer autenticação de administrador. A API rejeita livros duplicados pelo mesmo nome e autor ou pelo mesmo ISBN.
+    /// </remarks>
     [HttpPost]
     [Authorize(Policy = "AdministratorOnly")]
     [ProducesResponseType(typeof(BookDto), StatusCodes.Status201Created)]
@@ -68,8 +74,11 @@ public sealed class BooksController : ControllerBase
     }
 
     /// <summary>
-    /// Updates a book. Requires administrator authentication.
+    /// Atualiza os dados de um livro existente.
     /// </summary>
+    /// <remarks>
+    /// Requer autenticação de administrador. A atualização também respeita a validação de duplicidade por nome e autor ou ISBN.
+    /// </remarks>
     [HttpPut("{id:guid}")]
     [Authorize(Policy = "AdministratorOnly")]
     [ProducesResponseType(typeof(BookDto), StatusCodes.Status200OK)]
@@ -90,8 +99,11 @@ public sealed class BooksController : ControllerBase
     }
 
     /// <summary>
-    /// Deletes a book. Requires administrator authentication.
+    /// Remove um livro do estoque.
     /// </summary>
+    /// <remarks>
+    /// Requer autenticação de administrador. Após a exclusão, consultas pelo mesmo identificador retornam 404.
+    /// </remarks>
     [HttpDelete("{id:guid}")]
     [Authorize(Policy = "AdministratorOnly")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
